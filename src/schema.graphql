@@ -1,0 +1,253 @@
+scalar AWSDateTime
+
+type SaveNetworkDiagnosticOutput {
+  success: Boolean!
+}
+
+input SaveNetworkDiagnosticInput {
+  bandwidth: Float
+  device: String
+  ipAddress: String
+  isTurnRequired: Boolean
+  jitter: Float
+  mosScore: Float
+  networkType: NetworkType
+  percentagePacketLoss: Float
+  percentageVolumeIn: Float
+  percentageVolumeOut: Float
+  protocol: NetworkProtocolType
+  rtt: Float
+}
+
+enum NetworkType {
+  WIFI
+  ETHERNET
+  CELLULAR
+}
+
+enum NetworkProtocolType {
+  TCP
+  UDP
+}
+
+type Query {
+  _empty: String
+}
+
+type SendMessageOutput {
+  success: Boolean!
+  message: String
+}
+
+input WhatsAppHeaderInput {
+  type: String!
+  text: String
+}
+
+input WhatsAppCustomInput {
+  type: String!
+  text: String
+}
+
+input WhatsAppCardsInput {
+  title: String!
+  subtitle: String
+  imageUrl: String
+}
+
+input TemplateParamsInput {
+  ID: String!
+  header: WhatsAppHeaderInput
+  body: [WhatsAppCustomInput]
+  cards: WhatsAppCardsInput
+  buttons: [WhatsAppCustomInput]
+}
+
+input SendMessageInput {
+  channel: String
+  lineID: Int!
+  externalNumber: String!
+  text: String
+  mediaKeys: [String!]
+  templateParams: TemplateParamsInput
+}
+
+type Mutation {
+  saveNetworkDiagnostic(input: SaveNetworkDiagnosticInput!): SaveNetworkDiagnosticOutput!
+  sendMessage(input: SendMessageInput!): SendMessageOutput!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+scalar AWSDateTime
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+type Template {
+  ID: ID!
+  name: String!
+  status: TemplateStatus!
+  companyID: ID!
+  updatedAtTimestamp: Int!
+  createdAtTimestamp: Int!
+  type: TemplateType!
+  wabaID: String!
+  parameterFormat: ParameterFormat!
+  components: [TemplateComponent!]!
+  language: String!
+  category: TemplateCategory!
+  subCategory: TemplateSubCategory
+  libraryTemplateName: String
+  messageSendTtlSeconds: Int
+}
+
+type ListTemplatesResponse {
+  pageInfo: PageInfo
+  templates: [Template!]
+}
+
+union ListTemplatesResult = GenericException | ListTemplatesResponse
+
+input ListTemplatesInput {
+  category: TemplateCategory
+  limit: Int
+  lineID: ID!
+  sort: SearchableSortDirection
+  status: TemplateStatus
+  token: String
+}
+
+type FetchWAMessageOutput {
+  channel: String
+  lineID: Int
+  externalNumber: String
+  agent: MessagingAgent
+  direction: MessageDirection!
+  status: MessageStatus!
+  undeliveredReason: MessageUndeliveredReason
+  hasUnsupportedContent: Boolean
+  createdAt: String!
+  type: String
+  text: String
+  mediaDetails: [MediaDetails!]
+  templateDetails: TemplateDetails
+  locationDetails: LocationDetails
+  contactDetails: ContactDetails
+  buttonDetails: ButtonDetails
+}
+
+input FetchWAMessageInput {
+  channel: String
+  lineID: Int!
+  externalNumber: String!
+}
+
+type Mutation {
+  saveNetworkDiagnostic(input: SaveNetworkDiagnosticInput!): SaveNetworkDiagnosticOutput!
+  sendMessage(input: SendMessageInput!): SendMessageOutput!
+}
+
+type Query {
+  listTemplates(input: ListTemplatesInput!): ListTemplatesResult!
+  fetchWAMessage(input: FetchWAMessageInput!): FetchWAMessageOutput!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+enum TemplateStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TemplateType {
+  TEXT
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum ParameterFormat {
+  POSITIONAL
+  NAMED
+}
+
+type TemplateComponent {
+  type: String!
+  text: String
+}
+
+enum TemplateCategory {
+  MARKETING
+  TRANSACTIONAL
+}
+
+enum TemplateSubCategory {
+  PROMOTIONAL
+  ALERT
+}
+
+type GenericException {
+  message: String!
+}
+
+enum SearchableSortDirection {
+  ASC
+  DESC
+}
+
+enum MessagingAgent {
+  AGENT1
+  AGENT2
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  DELIVERED
+  FAILED
+}
+
+enum MessageUndeliveredReason {
+  UNKNOWN
+  BLOCKED
+}
+
+type MediaDetails {
+  url: String!
+  type: String!
+}
+
+type TemplateDetails {
+  ID: ID!
+  name: String!
+  type: TemplateType!
+  components: [TemplateComponent!]!
+}
+
+type LocationDetails {
+  latitude: Float
+  longitude: Float
+  address: String
+  label: String
+}
+
+type ContactDetails {
+  url: String!
+}
+
+type ButtonDetails {
+  button: String!
+  payload: String
+}
